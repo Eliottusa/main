@@ -1,0 +1,60 @@
+## API-Reference pour : EcoRide v2.1.0
+
+## Authentification
+
+Tous les endpoints protégés requièrent une clé API transmise via le paramètre de requête **token** ou le header HTTP correspondant.
+
+```
+token: secret_token_3a
+```
+
+Si clé absente; l'API retourne alors une erreur `401 Unauthorized`.
+
+---
+
+| Méthode | Route | Auth | Description |
+|---|---|---|---|
+| GET | `/health` | Non | Statut du service |
+| POST | `/api/v1/route` | Oui | Recommandation de trajet |
+
+## GET /health
+
+Vérifie l'état du service. Pas protégé!!
+
+**Réponse 200 :**
+
+```json
+{ "status": "healthy", "timestamp": 1718100000.0 }
+```
+
+---
+
+## POST /api/v1/route
+
+Retourne la recommandation de transport optimale. 
+**Authentification requise.**
+
+**Corps de la requête :**
+
+| Champ | Type | Description |
+|---|---|---|
+| `user_id` | string | Identifiant utilisateur |
+| `city` | string | Ville de départ (ex : `"Paris"`, `"Lyon"`) |
+| `destination` | string | Destination souhaitée |
+
+**Réponse 200 :**
+
+| Champ | Type | Description |
+|---|---|---|
+| `recommended_transport` | string | Mode de transport recommandé |
+| `estimated_time_minutes` | integer | Durée estimée en minutes |
+| `weather_condition` | string | Météo détectée (`Soleil`, `Pluie`, `Nuageux`) |
+| `carbon_footprint_g` | float | Empreinte carbone en grammes de CO₂ |
+
+**Codes d'erreur :**
+
+| Code | Cause |
+|---|---|
+| `401` | Token invalide ou absent |
+| `422` | Corps de requête invalide |
+| `503` | Service météo indisponible |
